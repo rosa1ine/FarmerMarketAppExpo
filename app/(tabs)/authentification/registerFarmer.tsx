@@ -103,16 +103,14 @@ export default function RegisterFarmer() {
 }
 
 const styles = StyleSheet.create({
-  
+  imgBackground: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  imgBackground: {
-    flex: 1,
-    justifyContent: 'center',
   },
   formContainer: {
     flex: 1,
