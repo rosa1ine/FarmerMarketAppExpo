@@ -76,6 +76,12 @@ export default function FarmerDashboard() {
         <Text style={styles.productName}>{item.name}</Text>
         <Text style={styles.productText}>Price: ₹{item.price.toFixed(2)}</Text>
         <Text style={styles.productText}>Stock: {item.quantity_available}</Text>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => }
+        >
+          <Text style={styles.deleteButtonText}>Delete</Text>
+    </TouchableOpacity>
       </View>
     </View>
   );
@@ -160,7 +166,7 @@ const styles = StyleSheet.create({
   },
   productCard: {
     width: 160,
-    height: 200, 
+    height: 215, 
     backgroundColor: '#fff',
     borderRadius: 10,
     marginHorizontal: 5,
@@ -216,7 +222,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-
   orderCard: {
     backgroundColor: '#fff',
     padding: 15,
@@ -240,5 +245,21 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 3,
   },
+
+  deleteButton: {
+    marginTop: 5,
+    marginBottom: 10, 
+    padding: 8,
+    backgroundColor: '#e74c3c',
+    borderRadius: 10,
+    alignItems: 'center',
+},
+deleteButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 10,
+},
+
+
   
 });
