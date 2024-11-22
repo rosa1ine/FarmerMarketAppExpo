@@ -78,7 +78,6 @@ export default function FarmerDashboard() {
         <Text style={styles.productText}>Stock: {item.quantity_available}</Text>
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => }
         >
           <Text style={styles.deleteButtonText}>Delete</Text>
     </TouchableOpacity>
@@ -124,6 +123,11 @@ export default function FarmerDashboard() {
             <TouchableOpacity style={styles.addButton} onPress={() => router.push('/farmer/AddProduct')}>
               <Text style={styles.addButtonText}>+ Add New Product</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity style={styles.addButton} onPress={() => router.push('/farmer/FarmerProfile')}>
+              <Text style={styles.addButtonText}>+ Profile(for now here) </Text>
+            </TouchableOpacity>
+
 
             {/* Recent Orders */}
             <Text style={styles.header}>Recent Orders</Text>
