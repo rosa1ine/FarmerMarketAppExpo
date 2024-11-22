@@ -10,10 +10,7 @@ export default function Navigation() {
       <Stack.Screen name="buyer/index" options={{ title: 'Buyer Dashboard' }} />
       <Stack.Screen name="buyer/ProductDetail" options={{ title: 'Product Detail' }} /> {/* Add this line */}
       <Stack.Screen name="farmer/index" options={{ title: 'Farmer Dashboard' }} />
-      <Stack.Screen name="farmer/AddProduct" options={{ title: 'Add Product' }} />
-      <Stack.Screen name="farmer/FarmerProfile" options={{ title: 'Farmer Profile' }} />
-
-      
+      <Stack.Screen name="farmer/AddProduct" options={{ title: 'Add Product' }} />      
     </Stack>
   );
 }

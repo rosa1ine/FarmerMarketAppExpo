@@ -77,9 +77,9 @@ export default function FarmerDashboard() {
         <Text style={styles.productText}>Price: ₹{item.price.toFixed(2)}</Text>
         <Text style={styles.productText}>Stock: {item.quantity_available}</Text>
         <TouchableOpacity
-          style={styles.deleteButton}
+          style={styles.editButton}
         >
-          <Text style={styles.deleteButtonText}>Delete</Text>
+          <Text style={styles.editButtonText}>Edit Product</Text>
     </TouchableOpacity>
       </View>
     </View>
@@ -123,11 +123,6 @@ export default function FarmerDashboard() {
             <TouchableOpacity style={styles.addButton} onPress={() => router.push('/farmer/AddProduct')}>
               <Text style={styles.addButtonText}>+ Add New Product</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity style={styles.addButton} onPress={() => router.push('/farmer/FarmerProfile')}>
-              <Text style={styles.addButtonText}>+ Profile(for now here) </Text>
-            </TouchableOpacity>
-
 
             {/* Recent Orders */}
             <Text style={styles.header}>Recent Orders</Text>
@@ -250,20 +245,18 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
 
-  deleteButton: {
+  editButton: {
     marginTop: 5,
     marginBottom: 10, 
     padding: 8,
-    backgroundColor: '#e74c3c',
+    backgroundColor: '#f97d5e',
     borderRadius: 10,
     alignItems: 'center',
 },
-deleteButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 10,
-},
-
-
+  editButtonText: {
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: 10,
+  },
   
 });
