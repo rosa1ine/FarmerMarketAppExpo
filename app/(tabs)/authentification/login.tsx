@@ -25,23 +25,23 @@ export default function Login() {
       Alert.alert('Error', 'Please fill in all fields and select a user type.');
       return;
     }
-
+  
     setLoading(true);
-
+  
     try {
       const response = await axios.post(
         'https://farmer-market-33zm.onrender.com/users/login/',
-        { username: email, password }
+        { username: email, password, user_type: userType } // Include user type
       );
-
+  
       if (response.status === 200 && response.data.token) {
         const token = response.data.token;
-
+  
         // Save the token locally
         await AsyncStorage.setItem('authToken', token);
-
+  
         Alert.alert('Login Successful', `Welcome back, ${userType}!`);
-
+  
         // Navigate based on user type
         if (userType === 'farmer') {
           router.push('/farmer');
@@ -49,7 +49,7 @@ export default function Login() {
           router.push('/buyer');
         }
       } else {
-        Alert.alert('Error', 'Invalid email or password.');
+        Alert.alert('Error', response.data.message || 'Invalid email or password.');
       }
     } catch (error) {
       console.error('API Error:', error.response?.data || error.message);
@@ -61,6 +61,7 @@ export default function Login() {
       setLoading(false);
     }
   };
+  
 
   return (
     <ImageBackground

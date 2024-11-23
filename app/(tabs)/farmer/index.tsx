@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FarmerNavBar from './FarmerNavBar';
 
 export default function FarmerDashboard() {
   const router = useRouter();
@@ -76,11 +77,9 @@ export default function FarmerDashboard() {
         <Text style={styles.productName}>{item.name}</Text>
         <Text style={styles.productText}>Price: ₹{item.price.toFixed(2)}</Text>
         <Text style={styles.productText}>Stock: {item.quantity_available}</Text>
-        <TouchableOpacity
-          style={styles.editButton}
-        >
+        <TouchableOpacity style={styles.editButton}>
           <Text style={styles.editButtonText}>Edit Product</Text>
-    </TouchableOpacity>
+      </TouchableOpacity>
       </View>
     </View>
   );
@@ -135,6 +134,7 @@ export default function FarmerDashboard() {
           </>
         )}
       </View>
+      <FarmerNavBar />
     </ImageBackground>
   );
 }
@@ -142,7 +142,9 @@ export default function FarmerDashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingTop: 20,
+    paddingLeft: 20,
+    paddingRight:20, 
   },
   imgBackground: {
     flex: 1,
@@ -165,7 +167,7 @@ const styles = StyleSheet.create({
   },
   productCard: {
     width: 160,
-    height: 215, 
+    height: 300, 
     backgroundColor: '#fff',
     borderRadius: 10,
     marginHorizontal: 5,

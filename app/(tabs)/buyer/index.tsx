@@ -10,6 +10,7 @@ import {
   TouchableOpacity 
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import BuyerNavBar from './BuyerNavBar';
 
 export default function BuyerDashboard() {
   const [products, setProducts] = useState([]);
@@ -57,6 +58,7 @@ export default function BuyerDashboard() {
   );
 
   return (
+    <>
     <View style={styles.container}>
       <Text style={styles.header}>Our Best Products</Text>
       {loading ? (
@@ -72,6 +74,8 @@ export default function BuyerDashboard() {
         />
       )}
     </View>
+    <BuyerNavBar/>
+    </>
   );
 }
 
