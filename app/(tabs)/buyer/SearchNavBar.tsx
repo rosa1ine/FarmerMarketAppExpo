@@ -30,30 +30,31 @@ const SearchNavBar: React.FC<{
       </View>
 
       {/* Category Picker */}
-      <Picker
-        selectedValue={category}
-        onValueChange={(value) => setCategory(value)}
-        style={styles.picker}
-      >
-        <Picker.Item label="Select Category" value="" />
-        <Picker.Item label="Fruits" value="fruits" />
-        <Picker.Item label="Vegetables" value="vegetables" />
-      </Picker>
+      <View style={styles.pickerContainer}>
+        <Text style={styles.label}>Category</Text>
+        <Picker
+          selectedValue={category}
+          onValueChange={(value) => setCategory(value)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Select Category" value="" />
+          <Picker.Item label="Fruits" value="Fruits" />
+          <Picker.Item label="Vegetables" value="Vegetables" />
+        </Picker>
+      </View>
 
       {/* Price Range */}
       <View style={styles.priceContainer}>
         <TextInput
-          style={[styles.priceInput, { marginRight: 5 }]}
+          style={[styles.priceInput, { marginRight: 8 }]}
           placeholder="Min Price"
           keyboardType="numeric"
-          value={priceRange.min}
           onChangeText={(value) => setPriceRange({ ...priceRange, min: value })}
         />
         <TextInput
-          style={[styles.priceInput, { marginLeft: 5 }]}
+          style={[styles.priceInput, { marginLeft: 8 }]}
           placeholder="Max Price"
           keyboardType="numeric"
-          value={priceRange.max}
           onChangeText={(value) => setPriceRange({ ...priceRange, max: value })}
         />
       </View>
@@ -64,16 +65,19 @@ const SearchNavBar: React.FC<{
       </TouchableOpacity>
 
       {/* Sort Options */}
-      <Picker
-        selectedValue=""
-        onValueChange={(value) => onSort(value)}
-        style={styles.picker}
-      >
-        <Picker.Item label="Sort By" value="" />
-        <Picker.Item label="Price: Low to High" value="priceAsc" />
-        <Picker.Item label="Price: High to Low" value="priceDesc" />
-        <Picker.Item label="Newest" value="newest" />
-      </Picker>
+      <View style={styles.pickerContainer}>
+        <Text style={styles.label}>Sort By</Text>
+        <Picker
+          selectedValue=""
+          onValueChange={(value) => onSort(value)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Sort By" value="" />
+          <Picker.Item label="Price: Low to High" value="priceAsc" />
+          <Picker.Item label="Price: High to Low" value="priceDesc" />
+          <Picker.Item label="Newest" value="newest" />
+        </Picker>
+      </View>
     </View>
   );
 };
@@ -81,76 +85,79 @@ const SearchNavBar: React.FC<{
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    padding: 10, // Reduced padding
-    borderRadius: 8, // Slightly smaller radius
+    padding: 16,
+    borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowRadius: 4,
     elevation: 2,
-    marginBottom: 15, // Reduced bottom margin
+    marginBottom: 20,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f9f9f9',
-    paddingHorizontal: 8, // Reduced padding
-    paddingVertical: 6, // Reduced vertical padding
-    borderRadius: 6, // Slightly smaller radius
-    marginBottom: 8, // Reduced spacing
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginBottom: 12,
     borderColor: '#ccc',
     borderWidth: 1,
   },
   searchInput: {
     flex: 1,
-    fontSize: 12, // Smaller font size
-    marginLeft: 5,
+    fontSize: 14,
+    marginLeft: 8,
   },
   icon: {
     marginRight: 5,
   },
-picker: {
-  height: 40, // Keep the height same as before
-  backgroundColor: '#f9f9f9',
-  borderRadius: 6,
-  marginBottom: 8,
-  paddingHorizontal: 8,
-  borderColor: '#ccc',
-  borderWidth: 1,
-  fontSize: 16, // Set a readable font size
-  lineHeight: 18, // Ensure proper spacing for text
-  justifyContent: 'center', // Center the text vertically
-  color: '#333', // Darker text for better visibility
-},
-
+  pickerContainer: {
+    marginBottom: 12,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    color: '#555',
+  },
+  picker: {
+    height: 40,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    fontSize: 14,
+  },
   priceContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8, // Reduced spacing
+    marginBottom: 12,
   },
   priceInput: {
     flex: 1,
-    height: 35, // Reduced height
+    height: 40,
     borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 6,
-    paddingHorizontal: 8, // Reduced padding
+    borderRadius: 8,
+    paddingHorizontal: 10,
     backgroundColor: '#f9f9f9',
-    fontSize: 12, // Smaller font size
-    marginHorizontal: 5,
+    fontSize: 14,
   },
   searchButton: {
     backgroundColor: '#3aaa58',
-    paddingVertical: 8, // Reduced padding
-    borderRadius: 6,
+    paddingVertical: 12,
+    borderRadius: 8,
     alignItems: 'center',
+    marginBottom: 12,
   },
   searchButtonText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 14, // Smaller font size
+    fontSize: 16,
   },
 });
-
 
 export default SearchNavBar;
