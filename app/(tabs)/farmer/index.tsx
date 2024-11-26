@@ -32,7 +32,7 @@ export default function FarmerDashboard() {
         const token = await AsyncStorage.getItem('authToken');
         if (!token) {
           Alert.alert('Error', 'You are not logged in.');
-          router.replace('/login'); // Redirect to login if not logged in
+          router.replace('/authentification/login'); // Redirect to login if not logged in
           return;
         }
 
@@ -67,7 +67,7 @@ export default function FarmerDashboard() {
   const renderProduct = ({ item }) => (
     <View style={styles.productCard}>
       {item.image ? (
-        <Image source={{ uri: item.image }} style={styles.productImage} />
+        <Image source={{ uri: item.image }} style={styles.productImage}  />
       ) : (
         <View style={styles.imagePlaceholder}>
           <Text style={styles.placeholderText}>No Image</Text>
@@ -75,11 +75,16 @@ export default function FarmerDashboard() {
       )}
       <View style={styles.productInfo}>
         <Text style={styles.productName}>{item.name}</Text>
-        <Text style={styles.productText}>Price: ₹{item.price.toFixed(2)}</Text>
+        <Text style={styles.productText}>Price: {item.price.toFixed(1)} tenge</Text>
         <Text style={styles.productText}>Stock: {item.quantity_available}</Text>
-        <TouchableOpacity style={styles.editButton}>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => {
+            console.log('Navigating to Edit Product with ID:', item.product_id); // Debugging
+            router.push({ pathname: '/farmer/EditProduct', params: { product_id: item.product_id } });
+          }}>
           <Text style={styles.editButtonText}>Edit Product</Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
       </View>
     </View>
   );

@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  View, 
-  Text, 
-  FlatList, 
-  StyleSheet, 
-  Image, 
-  ActivityIndicator, 
-  Alert, 
-  TouchableOpacity 
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Image,
+  ActivityIndicator,
+  Alert,
+  TouchableOpacity,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import BuyerNavBar from './BuyerNavBar';
+
+import SearchNavBar from './SearchNavBar';
+import { useNavigation } from '@react-navigation/native';
 
 export default function BuyerDashboard() {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]); // Filtered or searched products
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
@@ -25,6 +28,7 @@ export default function BuyerDashboard() {
 
         const data = await response.json();
         setProducts(data);
+        setFilteredProducts(data); // Initialize filteredProducts with all products
       } catch (error) {
         console.error('Error:', error);
         Alert.alert('Error', error.message);
@@ -35,6 +39,23 @@ export default function BuyerDashboard() {
 
     fetchProducts();
   }, []);
+
+  const handleSearch = (query: string) => {
+    if (!query) {
+      setFilteredProducts(products); // Show all products if search query is empty
+      return;
+    }
+
+    const searchResults = products.filter((product) =>
+      product.name.toLowerCase().includes(query.toLowerCase())
+    );
+
+    const remainingProducts = products.filter(
+      (product) => !product.name.toLowerCase().includes(query.toLowerCase())
+    );
+
+    setFilteredProducts([...searchResults, ...remainingProducts]); // Show search results at the top
+  };
 
   const renderProductCard = ({ item }) => (
     <View style={styles.card}>
@@ -58,14 +79,15 @@ export default function BuyerDashboard() {
   );
 
   return (
-    <>
     <View style={styles.container}>
+      {/* Pass handleSearch to BuyerNavBar */}
+      <SearchNavBar onSearch={handleSearch} />
       <Text style={styles.header}>Our Best Products</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#3aaa58" />
       ) : (
         <FlatList
-          data={products}
+          data={filteredProducts} // Render filtered products
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderProductCard}
           numColumns={2}
@@ -73,9 +95,10 @@ export default function BuyerDashboard() {
           columnWrapperStyle={styles.row}
         />
       )}
+      
+      <BuyerNavBar />
+
     </View>
-    <BuyerNavBar/>
-    </>
   );
 }
 
