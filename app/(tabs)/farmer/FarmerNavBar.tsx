@@ -14,6 +14,10 @@ const FarmerNavBar = () => {
         <Text style={styles.navItem}>Profile</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity onPress={() => router.push('/chat/Inbox')}>
+        <Text style={styles.navItem}>Chat</Text>
+      </TouchableOpacity>
+
     </View>
   );
 };

@@ -13,6 +13,9 @@ const BuyerNavBar = () => {
       <TouchableOpacity onPress={() => router.push('/buyer/BuyerCart')}>
         <Text style={styles.navItem}>Cart</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.push('/chat/Inbox')}>
+        <Text style={styles.navItem}>Chat</Text>
+      </TouchableOpacity>
 
     </View>
   );

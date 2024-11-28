@@ -61,7 +61,7 @@ const EditProduct = () => {
                       name: product.name || '',
                       price: product.price?.toString() || '',
                       quantity: product.quantity_available?.toString() || '',
-                      category: product.category_id || '', // Ensure the category is numeric
+                      category: product.category_id || '', 
                   });
               } else {
                   Alert.alert('Error', 'Product not found.');
@@ -78,64 +78,80 @@ const EditProduct = () => {
       }
   };
 
-  const fetchCategories = async () => {
-      try {
-          const response = await fetch('https://farmer-market-33zm.onrender.com/products/categories/');
-          const data = await response.json();
-          setCategories(data || []);
-      } catch (error) {
-          console.error('Error fetching categories:', error);
-          Alert.alert('Error', 'Failed to fetch categories.');
-      }
-  };
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('https://farmer-market-33zm.onrender.com/products/categories/');
+            
+            // Check if the response is ok
+            if (!response.ok) {
+                console.error('Failed to fetch categories:', response.status, response.statusText);
+                Alert.alert('Error', `Failed to fetch categories. Status: ${response.status}`);
+                return;
+            }
 
-  const handleSave = async () => {
-      if (!product.name || !product.price || !product.quantity || !product.category) {
-          Alert.alert('Error', 'Please fill in all fields.');
-          return;
-      }
+            const data = await response.json();
 
-      try {
-          setSaving(true);
-          const token = await AsyncStorage.getItem('authToken');
-          if (!token) {
-              Alert.alert('Error', 'You are not logged in.');
-              router.replace('/authentification/login');
-              return;
-          }
+            // Log the fetched categories
+            console.log('Categories:', data);
 
-          const response = await fetch(
-              `https://farmer-market-33zm.onrender.com/farmer/product/${product_id}/update/`,
-              {
-                  method: 'PATCH',
-                  headers: {
-                      Authorization: `Token ${token}`,
-                      'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                      name: product.name,
-                      price: product.price,
-                      quantity_available: product.quantity,
-                      category_id: product.category, 
-                  }),
-              }
-          );
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error.message);
+            Alert.alert('Error', 'Failed to fetch categories.');
+        }
+    };
 
-          const data = await response.json();
 
-          if (response.ok) {
-              Alert.alert('Success', 'Product updated successfully!');
-              router.replace('/farmer');
-          } else {
-              Alert.alert('Error', data.message || 'Failed to update product.');
-          }
-      } catch (error) {
-          console.error('Error updating product:', error);
-          Alert.alert('Error', 'An error occurred while updating the product.');
-      } finally {
-          setSaving(false);
-      }
-  };
+    const handleSave = async () => {
+        if (!product.name || !product.price || !product.quantity || !product.category) {
+            Alert.alert('Error', 'Please fill in all fields.');
+            return;
+        }
+
+        try {
+            setSaving(true);
+            const token = await AsyncStorage.getItem('authToken');
+            if (!token) {
+                Alert.alert('Error', 'You are not logged in.');
+                router.replace('/authentification/login');
+                return;
+            }
+
+            const response = await fetch(
+                `https://farmer-market-33zm.onrender.com/farmer/product/${product_id}/update/`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        Authorization: `Token ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: product.name,
+                        price: parseFloat(product.price),
+                        quantity_available: parseInt(product.quantity),
+                        category_id: parseInt(product.category),
+                    }),
+                }
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Alert.alert('Success', 'Product updated successfully!');
+                router.replace('/farmer');
+            } else {
+                console.error('Error response:', data);
+                Alert.alert('Error', data.message || 'Failed to update product.');
+            }
+        } catch (error) {
+            console.error('Error updating product:', error);
+            Alert.alert('Error', 'An error occurred while updating the product.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+
 
   const handleInputChange = (key, value) => {
       setProduct((prevState) => ({
@@ -182,18 +198,20 @@ const EditProduct = () => {
                   value={product.quantity}
                   onChangeText={(text) => handleInputChange('quantity', text)}
               />
+            <View style={styles.pickerContainer}>
+                <Picker
+                    selectedValue={product.category} // Ensures the selected category is displayed
+                    onValueChange={(itemValue) => 
+                        setProduct({ ...product, category: itemValue }) // Updates the product's category
+                    }
+                >
+                    <Picker.Item label="Select Category" value="" />
+                    {categories.map((cat) => (
+                        <Picker.Item key={cat.id} label={cat.name} value={cat.id} />
+                    ))}
+                </Picker>
+            </View>
 
-              <View style={styles.pickerContainer}>
-                  <Picker
-                      selectedValue={product.category}
-                      onValueChange={(itemValue) => handleInputChange('category', itemValue)}
-                  >
-                      <Picker.Item label="Select Category" value="" />
-                      {categories.map((cat) => (
-                          <Picker.Item key={cat.id} label={cat.name} value={cat.id} />
-                      ))}
-                  </Picker>
-              </View>
 
               <TouchableOpacity
                   style={styles.button}

@@ -9,15 +9,20 @@ import {
   Alert 
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [quantity, setQuantity] = useState(1); // For quantity selection
   const { params } = useRoute();
   const { productId } = params;
 
+  const router = useRouter();
+
   useEffect(() => {
+
+    // Fetch product details
     const fetchProductDetail = async () => {
       try {
         const response = await fetch('https://farmer-market-33zm.onrender.com/products/list/');
@@ -39,9 +44,17 @@ export default function ProductDetail() {
     fetchProductDetail();
   }, [productId]);
 
-  const handleAddToCart = () => {
-    Alert.alert('Added to Cart', `You added ${quantity} x ${product.name} to the cart!`);
+  const handleChat = () => {
+    if (product?.farmer?.id) {
+      router.push({
+        pathname: '../chat/Chat',
+        params: { receiverId: product.farmer.user, receiverName: product.farmer.name},
+      });
+    } else {
+      Alert.alert('Error', 'Unable to start chat. Missing farmer information.');
+    }
   };
+  
 
   if (loading) {
     return (
@@ -80,27 +93,10 @@ export default function ProductDetail() {
         <Text style={styles.infoText}>
           <Text style={styles.label}>Location:</Text> {product.farmer?.location || 'N/A'}
         </Text>
-      </View>
-
-      <View style={styles.quantityContainer}>
-        <TouchableOpacity
-          style={styles.quantityButton}
-          onPress={() => setQuantity((prev) => Math.max(1, prev - 1))}
-        >
-          <Text style={styles.quantityButtonText}>-</Text>
-        </TouchableOpacity>
-        <Text style={styles.quantityText}>{quantity}</Text>
-        <TouchableOpacity
-          style={styles.quantityButton}
-          onPress={() => setQuantity((prev) => prev + 1)}
-        >
-          <Text style={styles.quantityButtonText}>+</Text>
+        <TouchableOpacity style={styles.chatButton} onPress={handleChat}>
+          <Text style={styles.chatButtonText}>Chat</Text>
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
-        <Text style={styles.addToCartText}>Add to Cart</Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -110,8 +106,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#f6f6f6',
-    justifyContent:'center',
-    alignItems:'center'
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
     width: '100%',
@@ -166,6 +162,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
+  },
+  chatButton: {
+    backgroundColor: '#3aaa58',
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    width: '60%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    borderRadius: 10,
+  },
+  chatButtonText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
   },
   addToCartButton: {
     backgroundColor: '#3aaa58',

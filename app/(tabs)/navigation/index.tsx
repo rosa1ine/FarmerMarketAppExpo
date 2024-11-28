@@ -21,7 +21,11 @@ export default function Navigation() {
       <Stack.Screen name="farmer/AddProduct" options={{ title: 'Add Product' }} />
       <Stack.Screen name="farmer/FarmerProfileStart" options={{ title: 'Profile' }} />
       <Stack.Screen name="farmer/FarmerEditProfile" options={{ title: 'Edit Profile' }} />
-      <Stack.Screen name="farmer/EditProduct" options={{ title: 'Edit Product' }} /> {/* Add this */}
+      <Stack.Screen name="farmer/EditProduct" options={{ title: 'Edit Product' }} /> 
+
+      {/* Chat */}
+      <Stack.Screen name="chat/Chat" options={{ title: 'Chat' }} /> 
+      <Stack.Screen name="chat/Inbox" options={{ title: 'Inbox' }} /> 
     </Stack>
   );
 }
