@@ -10,14 +10,14 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import BuyerNavBar from './BuyerNavBar';
-
 import SearchNavBar from './SearchNavBar';
 import { useNavigation } from '@react-navigation/native';
 
 export default function BuyerDashboard() {
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]); // Filtered or searched products
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortOption, setSortOption] = useState(''); // For sorting
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function BuyerDashboard() {
 
         const data = await response.json();
         setProducts(data);
-        setFilteredProducts(data); // Initialize filteredProducts with all products
+        setFilteredProducts(data);
       } catch (error) {
         console.error('Error:', error);
         Alert.alert('Error', error.message);
@@ -40,30 +40,66 @@ export default function BuyerDashboard() {
     fetchProducts();
   }, []);
 
-  const handleSearch = (query: string) => {
-    if (!query) {
-      setFilteredProducts(products); // Show all products if search query is empty
-      return;
+  const handleSearch = (query, filters) => {
+    let filtered = products;
+
+    if (query) {
+      filtered = filtered.filter((product) =>
+        product.name.toLowerCase().includes(query.toLowerCase())
+      );
     }
 
-    const searchResults = products.filter((product) =>
-      product.name.toLowerCase().includes(query.toLowerCase())
-    );
+    if (filters.category) {
+      filtered = filtered.filter((product) => product.category === filters.category);
+    }
 
-    const remainingProducts = products.filter(
-      (product) => !product.name.toLowerCase().includes(query.toLowerCase())
-    );
+    if (filters.priceRange.min || filters.priceRange.max) {
+      filtered = filtered.filter(
+        (product) =>
+          (!filters.priceRange.min || product.price >= parseFloat(filters.priceRange.min)) &&
+          (!filters.priceRange.max || product.price <= parseFloat(filters.priceRange.max))
+      );
+    }
 
-    setFilteredProducts([...searchResults, ...remainingProducts]); // Show search results at the top
+    if (filters.organicOnly) {
+      filtered = filtered.filter((product) => product.isOrganic);
+    }
+
+    if (filters.location) {
+      filtered = filtered.filter((product) => product.location.includes(filters.location));
+    }
+
+    if (filters.deliveryOption) {
+      filtered = filtered.filter((product) => product.deliveryOption === filters.deliveryOption);
+    }
+
+    setFilteredProducts(sortProducts(filtered, sortOption)); // Apply sort after filtering
   };
+
+  const sortProducts = (products, option) => {
+    switch (option) {
+      case 'priceAsc':
+        return [...products].sort((a, b) => a.price - b.price);
+      case 'priceDesc':
+        return [...products].sort((a, b) => b.price - a.price);
+      case 'popularity':
+        return [...products].sort((a, b) => b.popularity - a.popularity);
+      case 'newest':
+        return [...products].sort(
+          (a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
+        );
+      default:
+        return products;
+    }
+  };
+
+  useEffect(() => {
+    setFilteredProducts(sortProducts(filteredProducts, sortOption));
+  }, [sortOption]);
 
   const renderProductCard = ({ item }) => (
     <View style={styles.card}>
-      <Image
-        source={{ uri: item.image }}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.text}>Category: {item.category}</Text>
@@ -80,14 +116,16 @@ export default function BuyerDashboard() {
 
   return (
     <View style={styles.container}>
-      {/* Pass handleSearch to BuyerNavBar */}
-      <SearchNavBar onSearch={handleSearch} />
+      <SearchNavBar
+        onSearch={(query, filters) => handleSearch(query, filters)}
+        onSort={(option) => setSortOption(option)}
+      />
       <Text style={styles.header}>Our Best Products</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#3aaa58" />
       ) : (
         <FlatList
-          data={filteredProducts} // Render filtered products
+          data={filteredProducts}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderProductCard}
           numColumns={2}
@@ -95,9 +133,8 @@ export default function BuyerDashboard() {
           columnWrapperStyle={styles.row}
         />
       )}
-      
-      <BuyerNavBar />
 
+      <BuyerNavBar />
     </View>
   );
 }
