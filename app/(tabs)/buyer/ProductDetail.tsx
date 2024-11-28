@@ -9,6 +9,8 @@ import {
   Alert 
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function ProductDetail() {
   const [product, setProduct] = useState(null);
@@ -39,9 +41,41 @@ export default function ProductDetail() {
     fetchProductDetail();
   }, [productId]);
 
-  const handleAddToCart = () => {
-    Alert.alert('Added to Cart', `You added ${quantity} x ${product.name} to the cart!`);
+  const handleAddToCart = async () => {
+    try {
+      const token = await AsyncStorage.getItem('authToken'); // Ensure this works
+      if (!token) {
+        Alert.alert('Error', 'You need to log in to add items to the cart.');
+        return;
+      }
+  
+      const response = await fetch('https://farmer-market-33zm.onrender.com/users/buyers/cart/add/', {
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product_id: product.id, // Send the product ID
+          quantity: quantity, // Send the selected quantity
+        }),
+      });
+  
+      const data = await response.json();
+      console.log('Add to Cart Response:', data);
+  
+      if (response.ok) {
+        Alert.alert('Success', `${quantity} x ${product.name} added to the cart!`);
+      } else {
+        Alert.alert('Error', data.message || 'Failed to add item to cart.');
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      Alert.alert('Error', 'An error occurred while adding the item to the cart.');
+    }
   };
+  
+  
 
   if (loading) {
     return (
