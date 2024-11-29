@@ -8,18 +8,27 @@ import {
   ActivityIndicator,
   Alert,
   TouchableOpacity,
+  Animated
 } from 'react-native';
 import BuyerNavBar from './BuyerNavBar';
-
 import SearchNavBar from './SearchNavBar';
 import { useNavigation } from '@react-navigation/native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function BuyerDashboard() {
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]); // Filtered or searched products
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortOption, setSortOption] = useState(''); // For sorting
   const navigation = useNavigation();
 
+  const [isFilterVisible, setIsFilterVisible] = useState(false); 
+
+  const [filterHeight, setFilterHeight] = useState(0);
+
+
+
+  // Fetch products from the server
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -28,7 +37,7 @@ export default function BuyerDashboard() {
 
         const data = await response.json();
         setProducts(data);
-        setFilteredProducts(data); // Initialize filteredProducts with all products
+        setFilteredProducts(data);
       } catch (error) {
         console.error('Error:', error);
         Alert.alert('Error', error.message);
@@ -40,30 +49,79 @@ export default function BuyerDashboard() {
     fetchProducts();
   }, []);
 
-  const handleSearch = (query: string) => {
-    if (!query) {
-      setFilteredProducts(products); // Show all products if search query is empty
-      return;
+  // Handle search and filters
+  const handleSearch = (query, filters) => {
+    let filtered = products;
+
+    if (query) {
+      filtered = filtered.filter((product) =>
+        product.name.toLowerCase().includes(query.toLowerCase())
+      );
     }
 
-    const searchResults = products.filter((product) =>
-      product.name.toLowerCase().includes(query.toLowerCase())
-    );
+    if (filters.category) {
+      filtered = filtered.filter((product) => product.category === filters.category);
+    }
 
-    const remainingProducts = products.filter(
-      (product) => !product.name.toLowerCase().includes(query.toLowerCase())
-    );
+    if (filters.priceRange.min || filters.priceRange.max) {
+      filtered = filtered.filter(
+        (product) =>
+          (!filters.priceRange.min || product.price >= parseFloat(filters.priceRange.min)) &&
+          (!filters.priceRange.max || product.price <= parseFloat(filters.priceRange.max))
+      );
+    }
 
-    setFilteredProducts([...searchResults, ...remainingProducts]); // Show search results at the top
+    if (filters.organicOnly) {
+      filtered = filtered.filter((product) => product.isOrganic);
+    }
+
+    if (filters.location) {
+      filtered = filtered.filter((product) => product.location.includes(filters.location));
+    }
+
+    if (filters.deliveryOption) {
+      filtered = filtered.filter((product) => product.deliveryOption === filters.deliveryOption);
+    }
+
+    setFilteredProducts(sortProducts(filtered, sortOption)); // Apply sort after filtering
   };
 
+  // Sorting products
+  const sortProducts = (products, option) => {
+    switch (option) {
+      case 'priceAsc':
+        return [...products].sort((a, b) => a.price - b.price);
+      case 'priceDesc':
+        return [...products].sort((a, b) => b.price - a.price);
+      case 'popularity':
+        return [...products].sort((a, b) => b.popularity - a.popularity);
+      case 'newest':
+        return [...products].sort(
+          (a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
+        );
+      default:
+        return products;
+    }
+  };
+
+  const toggleFilter = () => {
+    if (isFilterVisible) {
+      setFilterHeight(0); // Collapse filter
+    } else {
+      setFilterHeight(400); // Set a large enough height for all filtering options
+    }
+    setIsFilterVisible(!isFilterVisible);
+  };
+
+  // Update filtered products when the sort option changes
+  useEffect(() => {
+    setFilteredProducts(sortProducts(filteredProducts, sortOption));
+  }, [sortOption]);
+
+  // Render individual product cards
   const renderProductCard = ({ item }) => (
     <View style={styles.card}>
-      <Image
-        source={{ uri: item.image }}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      <Image source={{ uri: item.image }} style={styles.image} resizeMode="cover" />
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.text}>Category: {item.category}</Text>
@@ -80,24 +138,41 @@ export default function BuyerDashboard() {
 
   return (
     <View style={styles.container}>
-      {/* Pass handleSearch to BuyerNavBar */}
-      <SearchNavBar onSearch={handleSearch} />
+      {/* Filter Toggle Button */}
+      <TouchableOpacity style={styles.filterButton} onPress={toggleFilter}>
+        <Text style={styles.filterButtonText}>
+          {isFilterVisible ? 'Hide Filters' : 'Show Filters'}
+        </Text>
+      </TouchableOpacity>
+
+      <Animated.View style={{ height: filterHeight, overflow: 'hidden' }}>
+        <SearchNavBar
+          onSearch={(query, filters) => handleSearch(query, filters)}
+          onSort={(option) => setSortOption(option)}
+        />
+      </Animated.View>
+
+      {/* Header */}
       <Text style={styles.header}>Our Best Products</Text>
+
+      {/* Product List */}
       {loading ? (
         <ActivityIndicator size="large" color="#3aaa58" />
       ) : (
         <FlatList
-          data={filteredProducts} // Render filtered products
+          data={filteredProducts}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderProductCard}
           numColumns={2}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={[styles.list, { paddingBottom: 80 }]}
           columnWrapperStyle={styles.row}
         />
       )}
-      
-      <BuyerNavBar />
 
+      {/* Navigation Bar */}
+      <View style={styles.buyerNavBar}>
+        <BuyerNavBar />
+      </View>
     </View>
   );
 }
@@ -105,18 +180,29 @@ export default function BuyerDashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: '#f9f9f9',
+  },
+  filterButton: {
+    backgroundColor: '#3aaa58',
+    padding: 12,
+    borderRadius: 8,
+    margin: 10,
+    alignItems: 'center',
+  },
+  filterButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   header: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginVertical: 16,
     color: '#3aaa58',
     textAlign: 'center',
   },
   list: {
-    paddingBottom: 16,
+    paddingHorizontal: 10,
   },
   row: {
     justifyContent: 'space-between',
@@ -165,5 +251,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  buyerNavBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#3aaa58',
+    justifyContent: 'center',
   },
 });

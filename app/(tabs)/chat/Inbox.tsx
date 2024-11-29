@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
 
 const Inbox = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   // Fetch inbox messages from API
   const fetchInboxMessages = async () => {
@@ -25,17 +27,17 @@ const Inbox = () => {
       if (!response.ok) {
         const errorMessage = await response.text();
         console.error('Failed to fetch inbox:', errorMessage);
-        Alert.alert('Error', 'Failed to load inbox.');
+        Alert.alert('Error', 'Failed to load messages.');
         return;
       }
 
       const data = await response.json();
-      setMessages(data); // Update the state with fetched messages
+      setMessages(data.results || []);
     } catch (error) {
       console.error('Error fetching inbox:', error);
-      Alert.alert('Error', 'An error occurred while fetching inbox.');
+      Alert.alert('Error', 'An unexpected error occurred while fetching messages.');
     } finally {
-      setLoading(false); // Stop the loading indicator
+      setLoading(false);
     }
   };
 
@@ -43,18 +45,33 @@ const Inbox = () => {
     fetchInboxMessages();
   }, []);
 
+  const navigateToChat = (receiverId, receiverName) => {
+    router.push({
+      pathname: './Chat', // Assuming your `Chat.tsx` file is mapped to `/Chat` in your routes
+      params: { receiverId, receiverName },
+    });
+  };
+
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.messageItem}>
-      <Image source={{ uri: item.avatar || 'https://via.placeholder.com/150' }} style={styles.avatar} />
+    <TouchableOpacity
+      style={styles.messageItem}
+      onPress={() => navigateToChat(item.receiver, item.sender_profile.name)}
+    >
+      <Image
+        source={{ uri: item.sender_profile?.avatar || 'https://via.placeholder.com/150' }}
+        style={styles.avatar}
+      />
       <View style={styles.textContainer}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.message} numberOfLines={1}>{item.message}</Text>
+        <Text style={styles.name}>{item.sender_profile?.name || 'Unknown'}</Text>
+        <Text style={styles.message} numberOfLines={1}>
+          {item.message}
+        </Text>
       </View>
       <View style={styles.rightContainer}>
-        <Text style={styles.time}>{item.time}</Text>
-        {item.unreadCount > 0 && (
+        <Text style={styles.time}>{new Date(item.date).toLocaleTimeString()}</Text>
+        {!item.is_read && (
           <View style={styles.unreadBadge}>
-            <Text style={styles.unreadText}>{item.unreadCount}</Text>
+            <Text style={styles.unreadText}>New</Text>
           </View>
         )}
       </View>
@@ -68,7 +85,7 @@ const Inbox = () => {
       ) : (
         <FlatList
           data={messages}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
         />
       )}

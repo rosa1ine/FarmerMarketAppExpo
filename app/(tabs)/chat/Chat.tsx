@@ -10,6 +10,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
@@ -17,13 +18,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Chat = () => {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]); // State to hold chat history
+  const [messages, setMessages] = useState([]);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-  const [senderId, setSenderId] = useState(null); // Store senderId
-  const {receiverId: receiver} = useRoute().params;
-  const {receiverName: name} = useRoute().params;
-
-
+  const [senderId, setSenderId] = useState(null);
+  const { receiverId: receiver, receiverName: name } = useRoute().params;
+  console.log(receiver, name );
   const router = useRouter();
 
   useEffect(() => {
@@ -42,8 +41,8 @@ const Chat = () => {
 
   useEffect(() => {
     const fetchSenderId = async () => {
-      const senderId = await AsyncStorage.getItem('senderId');
-      setSenderId(parseInt(senderId, 10)); 
+      const storedSenderId = await AsyncStorage.getItem('senderId');
+      setSenderId(parseInt(storedSenderId, 10));
     };
 
     fetchSenderId();
@@ -51,51 +50,44 @@ const Chat = () => {
 
   useEffect(() => {
     const fetchMessages = async () => {
+      if (!senderId) return;
+
       try {
-        // Retrieve the token from AsyncStorage
         const token = await AsyncStorage.getItem('authToken');
         if (!token) {
-          // Alert the user and redirect to the login page if token is missing
           Alert.alert('Error', 'You are not logged in.');
           router.replace('/authentification/login');
           return;
         }
-    
-        // Make the GET request with the token in the Authorization header
+
         const response = await fetch(
           `https://farmer-market-33zm.onrender.com/chat/get-messages/${senderId}/${receiver}/`,
           {
             method: 'GET',
             headers: {
-              Authorization: `Token ${token}`, // Token authentication header
+              Authorization: `Token ${token}`,
               'Content-Type': 'application/json',
             },
           }
         );
-    
+
         if (!response.ok) {
-          // Handle non-2xx responses
-          const errorData = await response.text(); // Read error response
+          const errorData = await response.text();
           console.error('Failed to fetch messages:', errorData);
           Alert.alert('Error', 'Failed to fetch messages. Please try again.');
           return;
         }
-    
-        // Parse the successful response
+
         const data = await response.json();
-        console.log('Messages fetched successfully:', data);
         setMessages(data.results || []);
       } catch (error) {
-        // Log and alert in case of unexpected errors
         console.error('Error fetching messages:', error);
         Alert.alert('Error', 'An unexpected error occurred while fetching messages.');
       }
     };
-    
-  
-    if (senderId) fetchMessages();
+
+    fetchMessages();
   }, [senderId, receiver]);
-  
 
   const handleSendMessage = async () => {
     if (input.trim()) {
@@ -132,17 +124,19 @@ const Chat = () => {
           const data = await response.json();
           console.log('Message sent successfully:', data);
 
-          const newSenderId = data.sender;
-          if (newSenderId) {
-            await AsyncStorage.setItem('senderId', newSenderId.toString());
-            setSenderId(newSenderId); // Update senderId in state
+          // Save new senderId if returned by the server
+          if (data.sender && !senderId) {
+            await AsyncStorage.setItem('senderId', data.sender.toString());
+            setSenderId(data.sender);
           }
 
-          setMessages((prevMessages) => [...prevMessages, data]); // Update chat with the new message
-          setInput(''); // Clear the input field
+          // Update chat UI with new message
+          setMessages((prevMessages) => [...prevMessages, data]);
+          setInput('');
         }
       } catch (error) {
         console.error('Error sending message:', error);
+        Alert.alert('Error', 'Failed to send the message.');
       }
     }
   };
@@ -168,24 +162,26 @@ const Chat = () => {
         </TouchableOpacity>
       </View>
       <ScrollView
-        contentContainerStyle={styles.chatMessages}
-        keyboardShouldPersistTaps="handled"
-      >
-        {messages.map((message, index) => (
-          <View
-            key={index}
-            style={[
-              styles.chatMessage,
-              message.sender === senderId
-                ? styles.userMessage
-                : styles.expertMessage,
-            ]}
-          >
-            <Text>{message.message}</Text>
-            <Text style={styles.chatTime}>{new Date(message.date).toLocaleTimeString()}</Text>
-          </View>
-        ))}
+          contentContainerStyle={styles.chatMessages}
+          keyboardShouldPersistTaps="handled">
+          {messages.map((message, index) => (
+            <View
+              key={index}
+              style={[
+                styles.chatMessage,
+                message.sender === senderId
+                  ? styles.userMessage // Message sent by you
+                  : styles.expertMessage, // Message sent to you
+              ]}
+            >
+              <Text>{message.message}</Text>
+              <Text style={styles.chatTime}>
+                {new Date(message.date).toLocaleTimeString()}
+              </Text>
+            </View>
+          ))}
       </ScrollView>
+
       <View
         style={[
           styles.chatInputContainer,
@@ -205,7 +201,6 @@ const Chat = () => {
     </KeyboardAvoidingView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -291,7 +286,6 @@ const styles = StyleSheet.create({
   chatInput: {
     flex: 1,
     padding: 8,
-    
   },
   chatSendButton: {
     marginLeft: 10,
