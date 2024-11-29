@@ -86,6 +86,7 @@ const FarmerProfileStart = () => {
                 <View style={styles.profileSection}>
                     <Image
                         style={styles.profileImage}
+                        source={require('../assets/images/avatar.png')}
                     />
                     <Text style={styles.profileName}>{profileData.name}</Text>
                 </View>
@@ -114,7 +115,7 @@ const FarmerProfileStart = () => {
 
                     <Text style={styles.inputLabel}>Farm Location</Text>
                     <TextInput
-                        style={[styles.input, { borderColor: '#32CD32' }]}
+                        style={[styles.input, { borderColor: '#FFD700' }]}
                         value={profileData.location}
                         editable={false}
                     />
@@ -185,7 +186,6 @@ const styles = StyleSheet.create({
         width: '60%',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 20,
         elevation: 5,
         shadowColor: '#f97d5e',
         shadowOffset: { width: 0, height: 4 },

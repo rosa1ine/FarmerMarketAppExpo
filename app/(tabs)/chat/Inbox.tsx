@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+  ImageBackground,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
@@ -8,7 +18,6 @@ const Inbox = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Fetch inbox messages from API
   const fetchInboxMessages = async () => {
     try {
       const token = await AsyncStorage.getItem('authToken');
@@ -47,7 +56,7 @@ const Inbox = () => {
 
   const navigateToChat = (receiverId, receiverName) => {
     router.push({
-      pathname: './Chat', // Assuming your `Chat.tsx` file is mapped to `/Chat` in your routes
+      pathname: './Chat',
       params: { receiverId, receiverName },
     });
   };
@@ -57,10 +66,13 @@ const Inbox = () => {
       style={styles.messageItem}
       onPress={() => navigateToChat(item.receiver, item.sender_profile.name)}
     >
+      <View style={styles.avatarContainer}>
       <Image
-        source={{ uri: item.sender_profile?.avatar || 'https://via.placeholder.com/150' }}
+        source={require('../assets/images/avatar.png')}
         style={styles.avatar}
       />
+
+      </View>
       <View style={styles.textContainer}>
         <Text style={styles.name}>{item.sender_profile?.name || 'Unknown'}</Text>
         <Text style={styles.message} numberOfLines={1}>
@@ -79,7 +91,13 @@ const Inbox = () => {
   );
 
   return (
+  <ImageBackground
+    style={styles.imgBackground}
+    resizeMode="cover"
+    source={require('../assets/images/Chat.png')}
+  >
     <View style={styles.container}>
+      <Text style={styles.header}>My Inbox</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#4caf50" />
       ) : (
@@ -90,40 +108,56 @@ const Inbox = () => {
         />
       )}
     </View>
+  </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F6F6F6',
     paddingHorizontal: 10,
+  },
+  imgBackground: {
+    flex: 1,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 50,
+    color: '#FFA500',
   },
   messageItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     padding: 10,
     borderRadius: 10,
     marginVertical: 5,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
+    zIndex: 0, // Ensures shadows are not clipped due to sibling components
+  },
+  avatarContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#FFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
   },
   textContainer: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: 20,
   },
   name: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#2d3f65',
+    marginBottom: 5,
   },
   message: {
     fontSize: 14,
@@ -148,5 +182,6 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
 });
+
 
 export default Inbox;

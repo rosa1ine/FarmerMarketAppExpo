@@ -150,7 +150,7 @@ const Chat = () => {
         <View style={styles.chatExpertInfo}>
           <Image
             style={styles.expertAvatar}
-            source={{ uri: 'https://via.placeholder.com/40' }}
+            source={require('../assets/images/avatar.png')}
           />
           <View>
             <Text style={styles.expertName}>{name}</Text>

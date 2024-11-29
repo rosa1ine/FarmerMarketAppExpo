@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     outOfStockButton: {
-        backgroundColor: '#f77f00',
+        backgroundColor: '#f97d5e',
         flex: 0.40, 
         borderRadius: 30,
         alignItems: 'center',

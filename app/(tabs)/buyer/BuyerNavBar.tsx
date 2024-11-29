@@ -10,15 +10,15 @@ const BuyerNavBar = () => {
   return (
     <View style={styles.navBar}>
       <TouchableOpacity onPress={() => router.push('/buyer')} style={styles.navItem}>
-        <FontAwesome name="home" size={24} color="#fff" style={styles.icon} />
+        <FontAwesome name="home" size={24} color="#3aaa58" style={styles.icon} />
         <Text style={styles.navText}>Home</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.push('/buyer/BuyerCart')} style={styles.navItem}>
-        <FontAwesome name="shopping-cart" size={24} color="#fff" style={styles.icon} />
+        <FontAwesome name="shopping-cart" size={24} color="#3aaa58" style={styles.icon} />
         <Text style={styles.navText}>Cart</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.push('../chat/Inbox')} style={styles.navItem}>
-        <FontAwesome name="comment" size={24} color="#fff" style={styles.icon} />
+        <FontAwesome name="comment" size={24} color="#3aaa58" style={styles.icon} />
         <Text style={styles.navText}>Inbox</Text>
       </TouchableOpacity>
     </View>
@@ -30,7 +30,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#3aaa58',
+    backgroundColor: '#fff',
+    borderColor: '#3aaa58',
+    borderWidth: 2,
     paddingVertical: 20,
     borderRadius: 30,
   },
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   navText: {
-    color: '#fff',
+    color: '#3aaa58',
     fontSize: 14,
     fontWeight: 'bold',
     marginTop: 5,

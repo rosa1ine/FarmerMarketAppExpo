@@ -116,6 +116,21 @@ export default function ProductDetail() {
       <Text style={styles.name}>{product.name}</Text>
 
       <View style={styles.infoContainer}>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoText}>
+            <Text style={styles.label}>Farmer:</Text> {product.farmer?.name || 'N/A'}
+          </Text>
+          <TouchableOpacity style={styles.chatButton} onPress={handleChat}>
+            <Text style={styles.chatButtonText}>Chat</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.infoText}>
+            <Text style={styles.label}>Location:</Text> {product.farmer?.location || 'N/A'}
+          </Text>
+        </View>
+
         <Text style={styles.infoText}>
           <Text style={styles.label}>Category:</Text> {product.category}
         </Text>
@@ -125,40 +140,31 @@ export default function ProductDetail() {
         <Text style={styles.infoText}>
           <Text style={styles.label}>Price:</Text> ₸{product.price}
         </Text>
-        <Text style={styles.infoText}>
-          <Text style={styles.label}>Farmer:</Text> {product.farmer?.name || 'N/A'}
-        </Text>
-        <Text style={styles.infoText}>
-          <Text style={styles.label}>Location:</Text> {product.farmer?.location || 'N/A'}
-        </Text>
 
-        <TouchableOpacity
-          style={styles.quantityButton}
-          onPress={() => setQuantity((prev) => Math.max(1, prev - 1))}
-        >
-          <Text style={styles.quantityButtonText}>-</Text>
-        </TouchableOpacity>
-        
-        <Text style={styles.quantityText}>{quantity}</Text>
-        
-        <TouchableOpacity
-          style={styles.quantityButton}
-          onPress={() => setQuantity((prev) => prev + 1)}
-        >
-          <Text style={styles.quantityButtonText}>+</Text>
-        </TouchableOpacity>
+        <View style={styles.quantityContainer}>
+          <TouchableOpacity
+            style={styles.quantityButton}
+            onPress={() => setQuantity((prev) => Math.max(1, prev - 1))}
+          >
+            <Text style={styles.quantityButtonText}>-</Text>
+          </TouchableOpacity>
+          
+          <Text style={styles.quantityText}>{quantity}</Text>
+          
+          <TouchableOpacity
+            style={styles.quantityButton}
+            onPress={() => setQuantity((prev) => prev + 1)}
+          >
+            <Text style={styles.quantityButtonText}>+</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
-        <TouchableOpacity style={styles.chatButton} onPress={handleChat}>
-          <Text style={styles.chatButtonText}>Chat</Text>
-        </TouchableOpacity>
-
-        <View style={styles.alignButton}>
+      <View style={styles.alignButton}>
           <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
             <Text style={styles.addToCartText}>Add to Cart</Text>
           </TouchableOpacity>
         </View> 
-
-      </View>
     </View>
   );
 }
@@ -200,6 +206,13 @@ const styles = StyleSheet.create({
     color: '#555',
     marginBottom: 8,
   },
+
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
   label: {
     fontWeight: 'bold',
     color: '#3aaa58',
@@ -231,18 +244,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   chatButton: {
-    backgroundColor: '#3aaa58',
+    backgroundColor: '#fff',
+    borderColor: '#3aaa58',
+    borderWidth: 2,
     paddingVertical: 10,
-    paddingHorizontal: 40,
+    paddingHorizontal: 10,
     width: '60%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
-    borderRadius: 10,
+    margin: 10,
+    flex: 0.75,
+    borderRadius: 30,
   },
   chatButtonText: {
     fontSize: 16,
-    color: '#fff',
+    color: '#3aaa58',
     fontWeight: 'bold',
   },
   addToCartButton: {

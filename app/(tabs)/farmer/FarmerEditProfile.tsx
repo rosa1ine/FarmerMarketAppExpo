@@ -19,7 +19,7 @@ const FarmerEditProfile = () => {
         fullName: '',
         email: '',
         phoneNumber: '',
-        farmLocation: '',
+        location: '',
     });
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -50,7 +50,7 @@ const FarmerEditProfile = () => {
                     fullName: data.farmer.name || '',
                     email: data.farmer.contact_info?.split('Email: ')[1]?.split(',')[0] || '',
                     phoneNumber: data.farmer.contact_info?.split('Phone: ')[1]?.split(',')[0] || '',
-                    farmLocation: data.farm.name || '',
+                    location: data.farmer.location || '',
                 });
             } else {
                 Alert.alert('Error', data.message || 'Failed to load profile.');
@@ -80,7 +80,7 @@ const FarmerEditProfile = () => {
                 },
                 body: JSON.stringify({
                     name: profile.fullName,
-                    location: profile.farmLocation,
+                    location: profile.location,
                     contact_info: `Phone: ${profile.phoneNumber}, Email: ${profile.email}`,
                 }),
             });
@@ -129,38 +129,41 @@ const FarmerEditProfile = () => {
                         <View style={styles.profileSection}>
                             <Image
                                 style={styles.profileImage}
+                                source={require('../assets/images/avatar.png')}
                             />
                             <Text style={styles.profileName}>Edit Profile</Text>
                         </View>
 
                         <View style={styles.inputSection}>
-                            <Text style={styles.inputLabel}>Full Name</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={profile.fullName}
-                                onChangeText={(text) => handleInputChange('fullName', text)}
-                            />
+                        <Text style={styles.inputLabel}>Full Name</Text>
+                        <TextInput
+                            style={[styles.input, { borderColor: '#FF6347' }]} // Tomato color
+                            value={profile.fullName}
+                            onChangeText={(text) => handleInputChange('fullName', text)}
+                        />
 
-                            <Text style={styles.inputLabel}>Phone Number</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={profile.phoneNumber}
-                                onChangeText={(text) => handleInputChange('phoneNumber', text)}
-                                keyboardType="phone-pad"
-                            />
-                            <Text style={styles.inputLabel}>Email</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={profile.email}
-                                onChangeText={(text) => handleInputChange('email', text)}
-                            />
+                        <Text style={styles.inputLabel}>Phone Number</Text>
+                        <TextInput
+                            style={[styles.input, { borderColor: '#1E90FF' }]} // Dodger Blue
+                            value={profile.phoneNumber}
+                            onChangeText={(text) => handleInputChange('phoneNumber', text)}
+                            keyboardType="phone-pad"
+                        />
 
-                            <Text style={styles.inputLabel}>Farm Location</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={profile.farmLocation}
-                                onChangeText={(text) => handleInputChange('farmLocation', text)}
-                            />
+                        <Text style={styles.inputLabel}>Email</Text>
+                        <TextInput
+                            style={[styles.input, { borderColor: '#32CD32' }]} // Lime Green
+                            value={profile.email}
+                            onChangeText={(text) => handleInputChange('email', text)}
+                        />
+
+                        <Text style={styles.inputLabel}>Farm Location</Text>
+                        <TextInput
+                            style={[styles.input, { borderColor: '#FFD700' }]} // Gold
+                            value={profile.location}
+                            onChangeText={(text) => handleInputChange('location', text)}
+                        />
+
                         </View>
 
                         {/* Save Profile Button */}

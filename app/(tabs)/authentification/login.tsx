@@ -165,9 +165,19 @@ const styles = StyleSheet.create({
   },
   activeFarmerButton: {
     backgroundColor: '#3aaa58',
+    elevation: 5,
+    shadowColor: '#3aaa58',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
   },
   activeBuyerButton: {
     backgroundColor: '#fe724c',
+    elevation: 5,
+    shadowColor: '#f97d5e',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
   },
   inactiveButton: {
     backgroundColor: '#ccc',
@@ -202,11 +212,17 @@ const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: '#3aaa58',
     paddingVertical: 15,
+    paddingHorizontal: 40,
     borderRadius: 30,
     width: '60%',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 20,
+    elevation: 5,
+    shadowColor: '#3aaa58',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
   },
   loginButtonText: {
     color: '#fff',

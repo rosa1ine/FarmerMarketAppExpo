@@ -169,7 +169,6 @@ export default function BuyerDashboard() {
         />
       )}
 
-      {/* Navigation Bar */}
       <View style={styles.buyerNavBar}>
         <BuyerNavBar />
       </View>
@@ -241,7 +240,7 @@ const styles = StyleSheet.create({
   },
   detailButton: {
     marginTop: 10,
-    backgroundColor: '#3aaa58',
+    backgroundColor: '#f97d5e',
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 20,
@@ -257,7 +256,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#3aaa58',
     justifyContent: 'center',
   },
 });
