@@ -7,7 +7,6 @@ import {
     Alert,
     ScrollView,
     TouchableOpacity,
-    Image,
     StyleSheet,
     ActivityIndicator,
     ImageBackground,
@@ -16,94 +15,82 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
 
 const EditProduct = () => {
-  const router = useRouter();
-  const { product_id } = useLocalSearchParams();
+    const router = useRouter();
+    const { product_id } = useLocalSearchParams();
 
-  const [product, setProduct] = useState({
-      name: '',
-      price: '',
-      quantity: '',
-      category: '', // Ensure this is initially empty
-  });
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
+    const [productName, setProductName] = useState('');
+    const [price, setPrice] = useState('');
+    const [quantity, setQuantity] = useState('');
+    const [category, setCategory] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
 
-  const fetchProductDetails = async () => {
-      try {
-          setLoading(true);
-          const token = await AsyncStorage.getItem('authToken');
-          if (!token) {
-              Alert.alert('Error', 'You are not logged in.');
-              router.replace('/authentification/login');
-              return;
-          }
+    const fetchProductDetails = async () => {
+        try {
+            setLoading(true);
+            const token = await AsyncStorage.getItem('authToken');
+            if (!token) {
+                Alert.alert('Error', 'You are not logged in.');
+                router.replace('/authentification/login');
+                return;
+            }
 
-          const response = await fetch(
-              `https://farmer-market-33zm.onrender.com/farmer/dashboard/`,
-              {
-                  method: 'GET',
-                  headers: {
-                      Authorization: `Token ${token}`,
-                      'Content-Type': 'application/json',
-                  },
-              }
-          );
+            const response = await fetch(
+                `https://farmer-market-33zm.onrender.com/farmer/dashboard/`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Token ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
 
-          const data = await response.json();
+            const data = await response.json();
 
-          if (response.ok) {
-              const products = data.products || [];
-              const product = products.find((item) => item.product_id.toString() === product_id);
+            if (response.ok) {
+                const products = data.products || [];
+                const product = products.find((item) => item.product_id.toString() === product_id);
 
-              if (product) {
-                  setProduct({
-                      name: product.name || '',
-                      price: product.price?.toString() || '',
-                      quantity: product.quantity_available?.toString() || '',
-                      category: product.category_id || '', 
-                  });
-              } else {
-                  Alert.alert('Error', 'Product not found.');
-                  router.replace('./index');
-              }
-          } else {
-              Alert.alert('Error', data.message || 'Failed to fetch product details.');
-          }
-      } catch (error) {
-          console.error('Error fetching product details:', error);
-          Alert.alert('Error', 'An error occurred while fetching product details.');
-      } finally {
-          setLoading(false);
-      }
-  };
+                if (product) {
+                    setProductName(product.name || '');
+                    setPrice(product.price?.toString() || '');
+                    setQuantity(product.quantity_available?.toString() || '');
+                    setCategory(product.category || '');
+                } else {
+                    Alert.alert('Error', 'Product not found.');
+                    router.replace('./index');
+                }
+            } else {
+                Alert.alert('Error', data.message || 'Failed to fetch product details.');
+            }
+        } catch (error) {
+            console.error('Error fetching product details:', error);
+            Alert.alert('Error', 'An error occurred while fetching product details.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchCategories = async () => {
         try {
             const response = await fetch('https://farmer-market-33zm.onrender.com/products/categories/');
-            
-            // Check if the response is ok
-            if (!response.ok) {
-                console.error('Failed to fetch categories:', response.status, response.statusText);
-                Alert.alert('Error', `Failed to fetch categories. Status: ${response.status}`);
-                return;
-            }
-
             const data = await response.json();
 
-            // Log the fetched categories
-            console.log('Categories:', data);
-
-            setCategories(data);
+            if (response.ok) {
+                setCategories(data);
+            } else {
+                Alert.alert('Error', 'Failed to fetch categories.');
+            }
         } catch (error) {
-            console.error('Error fetching categories:', error.message);
+            console.error('Error fetching categories:', error);
             Alert.alert('Error', 'Failed to fetch categories.');
         }
     };
 
-
     const handleSave = async () => {
-        if (!product.name || !product.price || !product.quantity || !product.category) {
+        if (!productName || !price || !quantity || !category) {
             Alert.alert('Error', 'Please fill in all fields.');
             return;
         }
@@ -117,6 +104,13 @@ const EditProduct = () => {
                 return;
             }
 
+            const requestBody = {
+                name: productName,
+                price: parseFloat(price),
+                quantity_available: parseInt(quantity),
+                category: parseInt(category),
+            };
+
             const response = await fetch(
                 `https://farmer-market-33zm.onrender.com/farmer/product/${product_id}/update/`,
                 {
@@ -125,22 +119,15 @@ const EditProduct = () => {
                         Authorization: `Token ${token}`,
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        name: product.name,
-                        price: parseFloat(product.price),
-                        quantity_available: parseInt(product.quantity),
-                        category_id: parseInt(product.category),
-                    }),
+                    body: JSON.stringify(requestBody),
                 }
             );
-
-            const data = await response.json();
 
             if (response.ok) {
                 Alert.alert('Success', 'Product updated successfully!');
                 router.replace('/farmer');
             } else {
-                console.error('Error response:', data);
+                const data = await response.json();
                 Alert.alert('Error', data.message || 'Failed to update product.');
             }
         } catch (error) {
@@ -151,78 +138,165 @@ const EditProduct = () => {
         }
     };
 
+    const handleDelete = async () => {
+        Alert.alert(
+            'Confirm Delete',
+            'Are you sure you want to delete this product?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            const token = await AsyncStorage.getItem('authToken');
+                            if (!token) {
+                                Alert.alert('Error', 'You are not logged in.');
+                                router.replace('/authentification/login');
+                                return;
+                            }
+    
+                            const response = await fetch(
+                                `https://farmer-market-33zm.onrender.com/farmer/product/${product_id}/delete/`,
+                                {
+                                    method: 'DELETE',
+                                    headers: {
+                                        Authorization: `Token ${token}`,
+                                        'Content-Type': 'application/json',
+                                    },
+                                }
+                            );
+    
+                            if (response.ok) {
+                                Alert.alert('Success', 'Product deleted successfully!');
+                                router.replace('/farmer');
+                            } else {
+                                const data = await response.json();
+                                Alert.alert('Error', data.message || 'Failed to delete product.');
+                            }
+                        } catch (error) {
+                            console.error('Error deleting product:', error);
+                            Alert.alert('Error', 'An error occurred while deleting the product.');
+                        }
+                    },
+                },
+            ]
+        );
+    };
+
+    const handleMarkOutOfStock = async () => {
+        try {
+            const token = await AsyncStorage.getItem('authToken');
+            if (!token) {
+                Alert.alert('Error', 'You are not logged in.');
+                router.replace('/authentification/login');
+                return;
+            }
+    
+            const response = await fetch(
+                `https://farmer-market-33zm.onrender.com/farmer/products/${product_id}//out_of_stock/`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        Authorization: `Token ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+    
+            if (response.ok) {
+                Alert.alert('Success', 'Product marked as out of stock.');
+                setQuantity('0'); // Update quantity to reflect "Out of Stock" state.
+            } else {
+                const data = await response.json();
+                Alert.alert('Error', data.message || 'Failed to mark as out of stock.');
+            }
+        } catch (error) {
+            console.error('Error marking product as out of stock:', error);
+            Alert.alert('Error', 'An error occurred while marking the product as out of stock.');
+        }
+    };
+    
+    
+
+    useEffect(() => {
+        fetchProductDetails();
+        fetchCategories();
+    }, [product_id]);
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#3aaa58" style={styles.loadingIndicator} />;
+    }
+
+    return (
+        <ImageBackground
+            style={styles.imgBackground}
+            resizeMode="cover"
+            source={require('../assets/images/background.jpg')}
+        >
+            <ScrollView contentContainerStyle={styles.container}>
+                <Text style={styles.header}>Edit Product</Text>
+
+                <TextInput
+                    style={[styles.input, styles.productInput]}
+                    placeholder="Product Name"
+                    value={productName}
+                    onChangeText={setProductName}
+                />
+                <TextInput
+                    style={[styles.input, styles.priceInput]}
+                    placeholder="Price"
+                    keyboardType="numeric"
+                    value={price}
+                    onChangeText={setPrice}
+                />
+                <View style={styles.quantityContainer}>
+                    <TextInput
+                        style={[styles.input, styles.quantityInput]}
+                        placeholder="Quantity Available"
+                        keyboardType="numeric"
+                        value={quantity}
+                        onChangeText={setQuantity}
+                    />
+                    <TouchableOpacity
+                        style={[styles.button, styles.outOfStockButton]}
+                        onPress={handleMarkOutOfStock}
+                    >
+                        <Text style={styles.quantityButtonText}>Out of Stock</Text>
+                    </TouchableOpacity>
+                </View>
 
 
-  const handleInputChange = (key, value) => {
-      setProduct((prevState) => ({
-          ...prevState,
-          [key]: value,
-      }));
-  };
+                <View style={styles.pickerContainer}>
+                    <Picker
+                        selectedValue={category}
+                        onValueChange={setCategory}
+                    >
+                        <Picker.Item label="Select Category" value="" />
+                        {categories.map((cat) => (
+                            <Picker.Item key={cat.id} label={cat.name} value={cat.id.toString()} />
+                        ))}
+                    </Picker>
+                </View>
 
-  useEffect(() => {
-      fetchProductDetails();
-      fetchCategories();
-  }, [product_id]);
-
-  if (loading) {
-      return <ActivityIndicator size="large" color="#3aaa58" style={styles.loadingIndicator} />;
-  }
-
-  return (
-      <ImageBackground
-          style={styles.imgBackground}
-          resizeMode="cover"
-          source={require('../assets/images/background.jpg')}
-      >
-          <ScrollView contentContainerStyle={styles.container}>
-              <Text style={styles.header}>Edit Product</Text>
-
-              <TextInput
-                  style={[styles.input, styles.productInput]}
-                  placeholder="Product Name"
-                  value={product.name}
-                  onChangeText={(text) => handleInputChange('name', text)}
-              />
-              <TextInput
-                  style={[styles.input, styles.priceInput]}
-                  placeholder="Price"
-                  keyboardType="numeric"
-                  value={product.price}
-                  onChangeText={(text) => handleInputChange('price', text)}
-              />
-              <TextInput
-                  style={[styles.input, styles.quantityInput]}
-                  placeholder="Quantity Available"
-                  keyboardType="numeric"
-                  value={product.quantity}
-                  onChangeText={(text) => handleInputChange('quantity', text)}
-              />
-            <View style={styles.pickerContainer}>
-                <Picker
-                    selectedValue={product.category} // Ensures the selected category is displayed
-                    onValueChange={(itemValue) => 
-                        setProduct({ ...product, category: itemValue }) // Updates the product's category
-                    }
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleSave}
+                    disabled={saving}
                 >
-                    <Picker.Item label="Select Category" value="" />
-                    {categories.map((cat) => (
-                        <Picker.Item key={cat.id} label={cat.name} value={cat.id} />
-                    ))}
-                </Picker>
-            </View>
+                    <Text style={styles.buttonText}>{saving ? 'Saving...' : 'Update Product'}</Text>
+                </TouchableOpacity>
 
+                <TouchableOpacity
+                    style={[styles.button, styles.deleteButton]}
+                    onPress={handleDelete}
+                >
+                    <Text style={styles.buttonText}>Delete Product</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                  style={styles.button}
-                  onPress={handleSave}
-                  disabled={saving}
-              >
-                  <Text style={styles.buttonText}>{saving ? 'Saving...' : 'Update Product'}</Text>
-              </TouchableOpacity>
-          </ScrollView>
-      </ImageBackground>
-  );
+            </ScrollView>
+        </ImageBackground>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -280,14 +354,46 @@ const styles = StyleSheet.create({
     priceInput: {
         borderColor: '#f4a261',
     },
-    quantityInput: {
-        borderColor: '#e76f51',
-    },
     loadingIndicator: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
+    deleteButton: {
+        backgroundColor: '#e63946',
+        marginTop: 10,
+    },
+    quantityInput: {
+        borderColor: '#e76f51',
+        flex: 0.75, // Occupies 75% of the container width
+        marginRight: 10, // Adds some space between the input and button
+        borderWidth: 1,
+        borderRadius: 5,
+        padding: 15,
+        backgroundColor: '#fff',
+    },
+    outOfStockButton: {
+        backgroundColor: '#f77f00',
+        flex: 0.40, 
+        borderRadius: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 50,
+        paddingHorizontal: 5, 
+
+    },
+    quantityContainer: {
+        flexDirection: 'row',
+        width: '100%',
+        marginBottom: 10,
+    },
+    quantityButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
+        textAlign: 'center',
+    },
+    
 });
 
 export default EditProduct;
