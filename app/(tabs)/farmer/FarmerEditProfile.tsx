@@ -129,7 +129,7 @@ const FarmerEditProfile = () => {
                         <View style={styles.profileSection}>
                             <Image
                                 style={styles.profileImage}
-                                source={require('../assets/images/avatar.png')}
+                                source={require('../assets/images/avatar1.png')}
                             />
                             <Text style={styles.profileName}>Edit Profile</Text>
                         </View>

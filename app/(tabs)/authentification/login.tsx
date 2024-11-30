@@ -31,13 +31,13 @@ export default function Login() {
     try {
       const response = await axios.post(
         'https://farmer-market-33zm.onrender.com/users/login/',
-        { username: email, password, user_type: userType } // Include user type
+        { username: email, password, user_type: userType }
       );
   
       if (response.status === 200 && response.data.token) {
-        const token = response.data.token;
+        const token = response.data.token;  
   
-        // Save the token locally
+        // Save the new token and senderId
         await AsyncStorage.setItem('authToken', token);
   
         Alert.alert('Login Successful', `Welcome back, ${userType}!`);
@@ -61,6 +61,7 @@ export default function Login() {
       setLoading(false);
     }
   };
+  
   
 
   return (

@@ -21,7 +21,7 @@ const BuyerNavBar = () => {
         <FontAwesome name="history" size={24} color="#3aaa58" style={styles.icon} />
         <Text style={styles.navText}>Orders</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('../chat/Inbox')} style={styles.navItem}>
+      <TouchableOpacity onPress={() => router.push('../buyer/Inbox')} style={styles.navItem}>
         <FontAwesome name="comment" size={24} color="#3aaa58" style={styles.icon} />
         <Text style={styles.navText}>Inbox</Text>
       </TouchableOpacity>

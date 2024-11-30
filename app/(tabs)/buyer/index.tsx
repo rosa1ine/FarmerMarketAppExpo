@@ -38,6 +38,8 @@ export default function BuyerDashboard() {
         const data = await response.json();
         setProducts(data);
         setFilteredProducts(data);
+        console.log(data);
+        data.forEach(product => console.log('Product Image:', product.image));
       } catch (error) {
         console.error('Error:', error);
         Alert.alert('Error', error.message);

@@ -20,9 +20,11 @@ export default function FarmerDashboard() {
   const [totalProducts, setTotalProducts] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  
+
   const sampleOrders = [
-    { id: '1', buyer: 'John Doe', quantity: '10 kg', status: 'Pending' },
-    { id: '2', buyer: 'Jane Smith', quantity: '5 kg', status: 'Delivered' },
+    { id: '1', buyer: 'Damira Mukhamadieva', quantity: '10 kg', status: 'Pending' },
+    { id: '2', buyer: 'Yasmin Anadilova', quantity: '5 kg', status: 'Delivered' },
   ];
 
   useEffect(() => {
@@ -49,6 +51,8 @@ export default function FarmerDashboard() {
         if (response.ok) {
           setProducts(data.products || []);
           setTotalProducts(data.total_products || 0);
+          console.log(products);
+          
         } else {
           console.error('Error fetching products:', data);
           Alert.alert('Error', data.message || 'Failed to fetch products.');
@@ -65,29 +69,29 @@ export default function FarmerDashboard() {
   }, []);
 
   const renderProduct = ({ item }) => (
-    <View style={styles.productCard}>
-      {item.image ? (
-        <Image source={{ uri: item.image }} style={styles.productImage}  />
-      ) : (
-        <View style={styles.imagePlaceholder}>
-          <Text style={styles.placeholderText}>No Image</Text>
-        </View>
-      )}
-      <View style={styles.productInfo}>
-        <Text style={styles.productName}>{item.name}</Text>
-        <Text style={styles.productText}>Price: {item.price.toFixed(1)} tenge</Text>
-        <Text style={styles.productText}>Stock: {item.quantity_available}</Text>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => {
-            console.log('Navigating to Edit Product with ID:', item.product_id); // Debugging
-            router.push({ pathname: '/farmer/EditProduct', params: { product_id: item.product_id } });
-          }}>
-          <Text style={styles.editButtonText}>Edit Product</Text>
-        </TouchableOpacity>
+    
+  <View style={styles.productCard}>
+    {item.image ? (
+      <Image source={{ uri: `https://farmer-market-33zm.onrender.com${item.image}` }} style={styles.productImage} />
+    ) : (
+      <View style={styles.imagePlaceholder}>
+        <Text style={styles.placeholderText}>No Image</Text>
       </View>
+    )}
+    <View style={styles.productInfo}>
+      <Text style={styles.productName}>{item.name}</Text>
+      <Text style={styles.productText}>Price: {item.price.toFixed(1)} tenge</Text>
+      <Text style={styles.productText}>Stock: {item.quantity_available}</Text>
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => router.push({ pathname: '/farmer/EditProduct', params: { product_id: item.product_id } })}
+      >
+        <Text style={styles.editButtonText}>Edit Product</Text>
+      </TouchableOpacity>
     </View>
-  );
+  </View>
+);
+
 
   const renderOrder = ({ item }) => (
     <View style={styles.orderCard}>
@@ -150,6 +154,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingLeft: 20,
     paddingRight:20, 
+    
   },
   imgBackground: {
     flex: 1,
@@ -169,20 +174,32 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingHorizontal: 10,
+    paddingBottom: 10, // Add padding at the bottom to prevent clipping
   },
   productCard: {
     width: 160,
-    height: 300, 
     backgroundColor: '#fff',
     borderRadius: 10,
     marginHorizontal: 5,
-    marginVertical: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 2,
+    flexDirection: 'column', // Ensure elements are laid out vertically
+    paddingBottom: 40, // Padding at the bottom
   },
+  
+  editButton: {
+    marginTop: 5, 
+    paddingVertical:9, 
+    paddingHorizontal: 13, 
+    backgroundColor: '#f97d5e',
+    borderRadius: 15,
+    alignItems: 'center',
+    alignSelf: 'center', 
+  },
+  
   productImage: {
     height: 100,
     borderTopLeftRadius: 10,
@@ -217,10 +234,9 @@ const styles = StyleSheet.create({
   },
   addButton: {
     backgroundColor: '#3aaa58',
-    paddingVertical: 15,
+    paddingVertical: 14,
     borderRadius: 25,
     alignItems: 'center',
-    marginVertical: 20,
     marginHorizontal: 40,
   },
   addButtonText: {
@@ -252,14 +268,6 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
 
-  editButton: {
-    marginTop: 5,
-    marginBottom: 10, 
-    padding: 8,
-    backgroundColor: '#f97d5e',
-    borderRadius: 15,
-    alignItems: 'center',
-},
   editButtonText: {
       color: '#fff',
       fontWeight: 'bold',

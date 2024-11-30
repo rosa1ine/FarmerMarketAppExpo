@@ -16,7 +16,7 @@ const FarmerNavBar = () => {
         <FontAwesome name="user" size={24} color="#3aaa58" style={styles.icon} />
         <Text style={styles.navText}>Profile</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('../chat/Inbox')} style={styles.navItem}>
+      <TouchableOpacity onPress={() => router.push('../farmer/Inbox')} style={styles.navItem}>
         <FontAwesome name="comment" size={24} color="#3aaa58" style={styles.icon} />
         <Text style={styles.navText}>Inbox</Text>
       </TouchableOpacity>

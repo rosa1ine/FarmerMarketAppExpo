@@ -83,7 +83,7 @@ export default function ProductDetail() {
   const handleChat = () => {
     if (product?.farmer?.id) {
       router.push({
-        pathname: '../chat/Chat',
+        pathname: '../buyer/Chat',
         params: { receiverId: product.farmer.user, receiverName: product.farmer.name},
       });
     } else {
@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     backgroundColor: '#fff',
+    width: 260,
     padding: 16,
     borderRadius: 8,
     marginBottom: 20,

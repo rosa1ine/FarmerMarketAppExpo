@@ -17,80 +17,70 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Chat = () => {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-  const [senderId, setSenderId] = useState(null);
-  const { receiverId: receiver, receiverName: name } = useRoute().params;
-  console.log(receiver, name );
-  const router = useRouter();
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-      setIsKeyboardVisible(true);
-    });
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      setIsKeyboardVisible(false);
-    });
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    const fetchSenderId = async () => {
-      const storedSenderId = await AsyncStorage.getItem('senderId');
-      setSenderId(parseInt(storedSenderId, 10));
-    };
-
-    fetchSenderId();
-  }, []);
-
-  useEffect(() => {
-    const fetchMessages = async () => {
-      if (!senderId) return;
-
-      try {
-        const token = await AsyncStorage.getItem('authToken');
-        if (!token) {
-          Alert.alert('Error', 'You are not logged in.');
-          router.replace('/authentification/login');
-          return;
-        }
-
-        const response = await fetch(
-          `https://farmer-market-33zm.onrender.com/chat/get-messages/${senderId}/${receiver}/`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Token ${token}`,
-              'Content-Type': 'application/json',
-            },
+    const [input, setInput] = useState('');
+    const [messages, setMessages] = useState([]);
+    const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+    const { receiverId: receiver, receiverName: name } = useRoute().params;
+    const router = useRouter();
+  
+    const senderId = 44; // Farmer's ID (assuming you have the farmer’s ID directly available)
+  
+    useEffect(() => {
+      const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+        setIsKeyboardVisible(true);
+      });
+      const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+        setIsKeyboardVisible(false);
+      });
+  
+      return () => {
+        keyboardDidShowListener.remove();
+        keyboardDidHideListener.remove();
+      };
+    }, []);
+  
+    useEffect(() => {
+      const fetchMessages = async () => {
+        try {
+          const token = await AsyncStorage.getItem('authToken');
+          if (!token) {
+            Alert.alert('Error', 'You are not logged in.');
+            router.replace('/authentification/login');
+            return;
           }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.text();
-          console.error('Failed to fetch messages:', errorData);
-          Alert.alert('Error', 'Failed to fetch messages. Please try again.');
-          return;
+  
+          const response = await fetch(
+            `https://farmer-market-33zm.onrender.com/chat/get-messages/${senderId}/${receiver}/`,
+            {
+              method: 'GET',
+              headers: {
+                Authorization: `Token ${token}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+  
+          if (!response.ok) {
+            const errorData = await response.text();
+            console.error('Failed to fetch messages:', errorData);
+            Alert.alert('Error', 'Failed to fetch messages. Please try again.');
+            return;
+          }
+  
+          const data = await response.json();
+          setMessages(data.results || []);
+        } catch (error) {
+          console.error('Error fetching messages:', error);
+          Alert.alert('Error', 'An unexpected error occurred while fetching messages.');
         }
-
-        const data = await response.json();
-        setMessages(data.results || []);
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-        Alert.alert('Error', 'An unexpected error occurred while fetching messages.');
-      }
-    };
-
-    fetchMessages();
-  }, [senderId, receiver]);
-
-  const handleSendMessage = async () => {
-    if (input.trim()) {
+      };
+  
+      fetchMessages();
+    }, [senderId, receiver]);
+  
+    const handleSendMessage = async () => {
+      if (!input.trim()) return;
+  
       try {
         const token = await AsyncStorage.getItem('authToken');
         if (!token) {
@@ -98,13 +88,13 @@ const Chat = () => {
           router.replace('/authentification/login');
           return;
         }
-
+  
         const messagePayload = {
           receiver,
           message: input.trim(),
           is_read: false,
         };
-
+  
         const response = await fetch(
           'https://farmer-market-33zm.onrender.com/chat/send-messages/',
           {
@@ -116,20 +106,14 @@ const Chat = () => {
             body: JSON.stringify(messagePayload),
           }
         );
-
+  
         if (!response.ok) {
           const errorMessage = await response.text();
           console.error('Failed to send message:', errorMessage);
         } else {
           const data = await response.json();
           console.log('Message sent successfully:', data);
-
-          // Save new senderId if returned by the server
-          if (data.sender && !senderId) {
-            await AsyncStorage.setItem('senderId', data.sender.toString());
-            setSenderId(data.sender);
-          }
-
+  
           // Update chat UI with new message
           setMessages((prevMessages) => [...prevMessages, data]);
           setInput('');
@@ -138,40 +122,41 @@ const Chat = () => {
         console.error('Error sending message:', error);
         Alert.alert('Error', 'Failed to send the message.');
       }
-    }
-  };
-
-  return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <View style={styles.chatHeader}>
-        <View style={styles.chatExpertInfo}>
-          <Image
-            style={styles.expertAvatar}
-            source={require('../assets/images/avatar.png')}
-          />
-          <View>
-            <Text style={styles.expertName}>{name}</Text>
-            <Text style={styles.onlineStatus}>Online Now</Text>
+    };
+  
+    return (
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <View style={styles.chatHeader}>
+          <View style={styles.chatExpertInfo}>
+            <Image
+              style={styles.expertAvatar}
+              source={require('../assets/images/avatar1.png')}
+            />
+            <View>
+              <Text style={styles.expertName}>Buyer</Text>
+              <Text style={styles.onlineStatus}>Online Now</Text>
+            </View>
           </View>
+          <TouchableOpacity>
+            <Text style={styles.chatCloseBtn}>X</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity>
-          <Text style={styles.chatCloseBtn}>X</Text>
-        </TouchableOpacity>
-      </View>
-      <ScrollView
+  
+        <ScrollView
           contentContainerStyle={styles.chatMessages}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+        >
           {messages.map((message, index) => (
             <View
               key={index}
               style={[
                 styles.chatMessage,
                 message.sender === senderId
-                  ? styles.userMessage // Message sent by you
-                  : styles.expertMessage, // Message sent to you
+                  ? styles.userMessage // Message sent by you (Farmer)
+                  : styles.expertMessage, // Message sent to you (Buyer)
               ]}
             >
               <Text>{message.message}</Text>
@@ -180,27 +165,27 @@ const Chat = () => {
               </Text>
             </View>
           ))}
-      </ScrollView>
-
-      <View
-        style={[
-          styles.chatInputContainer,
-          isKeyboardVisible ? styles.chatInputContainerKeyboardVisible : null,
-        ]}
-      >
-        <TextInput
-          style={styles.chatInput}
-          value={input}
-          onChangeText={setInput}
-          placeholder="Type your message..."
-        />
-        <TouchableOpacity style={styles.chatSendButton} onPress={handleSendMessage}>
-          <Text style={styles.chatSendButtonText}>Send</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
-  );
-};
+        </ScrollView>
+  
+        <View
+          style={[
+            styles.chatInputContainer,
+            isKeyboardVisible ? styles.chatInputContainerKeyboardVisible : null,
+          ]}
+        >
+          <TextInput
+            style={styles.chatInput}
+            value={input}
+            onChangeText={setInput}
+            placeholder="Type your message..."
+          />
+          <TouchableOpacity style={styles.chatSendButton} onPress={handleSendMessage}>
+            <Text style={styles.chatSendButtonText}>Send</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    );
+  };  
 
 const styles = StyleSheet.create({
   container: {

@@ -23,9 +23,13 @@ export default function Navigation() {
       <Stack.Screen name="farmer/FarmerEditProfile" options={{ title: 'Edit Profile' }} />
       <Stack.Screen name="farmer/EditProduct" options={{ title: 'Edit Product' }} /> 
 
-      {/* Chat */}
-      <Stack.Screen name="chat/Chat" options={{ title: 'Chat' }} /> 
-      <Stack.Screen name="chat/Inbox" options={{ title: 'Inbox' }} /> 
+      {/* BUYER */}
+      <Stack.Screen name="buyer/Chat" options={{ title: 'Chat' }} /> 
+      <Stack.Screen name="buyer/Inbox" options={{ title: 'Inbox' }} /> 
+
+       {/* FARMER */}
+      <Stack.Screen name="farmer/Chat" options={{ title: 'Chat' }} /> 
+      <Stack.Screen name="farmer/Inbox" options={{ title: 'Inbox' }} /> 
     </Stack>
   );
 }
