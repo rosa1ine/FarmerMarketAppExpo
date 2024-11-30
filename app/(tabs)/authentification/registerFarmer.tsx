@@ -105,6 +105,7 @@ export default function RegisterFarmer() {
 const styles = StyleSheet.create({
   imgBackground: {
     flex: 1,
+    width: '100%', 
   },
   container: {
     flex: 1,
