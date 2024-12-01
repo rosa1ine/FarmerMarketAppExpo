@@ -16,6 +16,14 @@ const FarmerNavBar = () => {
         <FontAwesome name="user" size={24} color="#fff" style={styles.icon} />
         <Text style={styles.navText}>Profile</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.push('/farmer/InventoryReports')} style={styles.navItem}>
+        <FontAwesome name="user" size={24} color="#fff" style={styles.icon} />
+        <Text style={styles.navText}>Inventory reports</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.push('/farmer/sales-report')} style={styles.navItem}>
+        <FontAwesome name="user" size={24} color="#fff" style={styles.icon} />
+        <Text style={styles.navText}>Sales reports</Text>
+      </TouchableOpacity>
     </View>
   );
 };
