@@ -5,32 +5,9 @@ import SalesReportGraph from './SalesReportGraph';
 import ErrorView from './ErrorView';
 import { PermissionsAndroid } from 'react-native';
 
-import { PDFDocument, rgb } from 'react-native-pdf-lib';
-import fs from 'react-native-fs';
-import RNFS from 'react-native-fs';
 
 
 
-
-
-const requestStoragePermission = async () => {
-  try {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-      {
-        title: "Storage Permission Required",
-        message: "This app needs access to your storage to save the PDF file.",
-        buttonNeutral: "Ask Me Later",
-        buttonNegative: "Cancel",
-        buttonPositive: "OK",
-      }
-    );
-    return granted === PermissionsAndroid.RESULTS.GRANTED;
-  } catch (err) {
-    console.warn(err);
-    return false;
-  }
-};
 
 const fetchSalesData = async ({ startDate, endDate, reportType }) => {
   const baseUrl = 'https://farmer-market-33zm.onrender.com/users/farmers/sales-report/';
