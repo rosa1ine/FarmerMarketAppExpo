@@ -33,7 +33,7 @@ const requestStoragePermission = async () => {
 };
 
 const fetchSalesData = async ({ startDate, endDate, reportType }) => {
-  const baseUrl = 'http://localhost:8080/users/farmers/sales-report/';
+  const baseUrl = 'https://farmer-market-33zm.onrender.com/users/farmers/sales-report/';
   const url = `${baseUrl}?start_date=${startDate}&end_date=${endDate}&report_type=${reportType}`;
 
   try {
