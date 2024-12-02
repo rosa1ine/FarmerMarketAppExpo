@@ -112,8 +112,8 @@ const SalesReportsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000', padding: 16 },
-  header: { fontSize: 24, fontWeight: 'bold', marginBottom: 16, color: '#fff', textAlign: 'center' },
+  container: { flex: 1, backgroundColor: '#fff', padding: 16 },
+  header: { fontSize: 24, fontWeight: 'bold', marginBottom: 16, color: '#3aaa58', textAlign: 'center' },
 });
 
 
