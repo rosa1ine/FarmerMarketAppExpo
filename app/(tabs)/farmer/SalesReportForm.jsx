@@ -50,9 +50,9 @@ const styles = StyleSheet.create({
     padding: 8,
     marginVertical: 8,
     borderRadius: 4,
-    color: '#fff',
+    color: '#ccc',
   },
-  text:{color:'#fff'},
+  text:{color:'#000'},
 });
 
 export default SalesReportForm;
