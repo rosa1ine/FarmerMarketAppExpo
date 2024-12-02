@@ -10,23 +10,27 @@ const FarmerNavBar = () => {
     <View style={styles.navBar}>
       <TouchableOpacity onPress={() => router.push('/farmer')} style={styles.navItem}>
         <FontAwesome name="home" size={24} color="#3aaa58" style={styles.icon} />
-        <Text style={styles.navText}>Home</Text>
+        <Text style={styles.navText}>Home</Text> {/* Text wrapped in <Text> */}
       </TouchableOpacity>
+
       <TouchableOpacity onPress={() => router.push('/farmer/FarmerProfileStart')} style={styles.navItem}>
         <FontAwesome name="user" size={24} color="#3aaa58" style={styles.icon} />
-        <Text style={styles.navText}>Profile</Text>
+        <Text style={styles.navText}>Profile</Text> {/* Text wrapped in <Text> */}
       </TouchableOpacity>
+
       <TouchableOpacity onPress={() => router.push('../farmer/Inbox')} style={styles.navItem}>
         <FontAwesome name="comment" size={24} color="#3aaa58" style={styles.icon} />
-        <Text style={styles.navText}>Inbox</Text>
-        </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('/farmer/InventoryReportsScreen')} style={styles.navItem}>
-        <FontAwesome name="user" size={24} color="#fff" style={styles.icon} />
-        <Text style={styles.navText}>Inventory reports</Text>
+        <Text style={styles.navText}>Inbox</Text> {/* Text wrapped in <Text> */}
       </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.push('/farmer/InventoryReportsScreen')} style={styles.navItem}>
+        <FontAwesome name="archive" size={24} color="#3aaa58" style={styles.icon} /> {/* Icon for Inventory Reports */}
+        <Text style={styles.navText}>Report 1</Text> {/* Text wrapped in <Text> */}
+      </TouchableOpacity>
+
       <TouchableOpacity onPress={() => router.push('/farmer/sales-report')} style={styles.navItem}>
-        <FontAwesome name="user" size={24} color="#fff" style={styles.icon} />
-        <Text style={styles.navText}>Sales reports</Text>
+        <FontAwesome name="bar-chart" size={24} color="#3aaa58" style={styles.icon} /> {/* Icon for Sales Reports */}
+        <Text style={styles.navText}>Report 2</Text> {/* Text wrapped in <Text> */}
       </TouchableOpacity>
     </View>
   );
@@ -56,4 +60,5 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
+
 export default FarmerNavBar;
